@@ -1,7 +1,14 @@
+using ControleFinanceiroApplication.Interfaces;
+using ControleFinanceiroApplication.Mappings;
+using ControleFinanceiroApplication.Repositories;
+using ControleFinanceiroApplication.UseCases;
+using ControleFinanceiroInfrastructure.Context;
+using ControleFinanceiroInfrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,8 +33,21 @@ namespace ControleFinanceiro_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("EnableCORS", builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build();
+                });
+            });
+
+            services.AddDbContext<ControleFinanceiroContext>(options => options.UseSqlServer(
+                Configuration.GetConnectionString("ConexaoBD")));
 
             services.AddControllers();
+            services.AddScoped<IDespesaUseCase, DespesaUseCase>();
+            services.AddScoped<IControleDespesaRepository, ControleDespesaRepository>();
+            services.AddAutoMapper(typeof(MappingProfile));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ControleFinanceiro_API", Version = "v1" });
@@ -47,6 +67,8 @@ namespace ControleFinanceiro_API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("EnableCORS");
 
             app.UseAuthorization();
 
