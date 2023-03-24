@@ -1,9 +1,5 @@
-﻿using ControleFinanceiroApplication.DTOs;
-using ControleFinanceiroApplication.UseCases;
-using System;
+﻿using ControleFinanceiroDomain.DTOs;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ControleFinanceiroApplication.Interfaces
@@ -11,5 +7,7 @@ namespace ControleFinanceiroApplication.Interfaces
     public interface IDespesaUseCase
     {
         Task<List<DespesaDTO>> ListaDespesa();
+        Task<bool> Incluir(DespesaDTO despesaDTO);
+        Task<string> ExcluirDespesa(int id);
     }
 }
